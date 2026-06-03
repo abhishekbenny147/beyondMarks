@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.14",
+    "axios": "^1.16.1",
+    "react-router-dom": "^7.16.0",
+    "zustand": "^5.0.14"
+  }
+}
