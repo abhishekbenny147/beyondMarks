@@ -1,3 +1,8 @@
+
+DELETE FROM hidden_careers WHERE id > 0;
+DELETE FROM career_domains WHERE id > 0;
+
+
 INSERT IGNORE INTO career_domains (name, description, category, average_salary, future_scope, required_skills, icon_name, color_hex, slug) VALUES
 ('Full Stack Developer', 'Build complete web applications handling both frontend and backend systems for real-world products.', 'Tech & Digital', '$110,000', 'Extremely high demand every startup and enterprise needs full stack engineers.', 'JavaScript, React, Node.js, SQL, Git, REST APIs, HTML, CSS', 'code', '#6366F1', 'full-stack-developer'),
 ('Backend Engineer', 'Design and build the server-side logic, databases, and APIs that power applications.', 'Tech & Digital', '$115,000', 'Critical role in every tech company high demand globally.', 'Java, Python, Spring Boot, SQL, REST APIs, Microservices, Docker', 'server', '#8B5CF6', 'backend-engineer'),
