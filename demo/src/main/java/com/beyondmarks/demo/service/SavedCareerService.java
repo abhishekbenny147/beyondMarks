@@ -22,30 +22,29 @@ public class SavedCareerService {
     private final CareerDomainRepository careerRepository;
 
     public List<SavedCareer> getSaved(String email) {
-        User user = getUser(email);
-        return savedCareerRepository.findByUser(user);
+        return savedCareerRepository.findByUser(getUser(email));
     }
 
     public Map<String, Object> toggleSave(Long careerId, String email) {
-        User user = getUser(email);
+        User user           = getUser(email);
         CareerDomain career = careerRepository.findById(careerId)
                 .orElseThrow(() -> new RuntimeException("Career not found"));
 
         if (savedCareerRepository.existsByUserAndCareer(user, career)) {
             savedCareerRepository.deleteByUserAndCareer(user, career);
             return Map.of("saved", false, "message", "Career removed from saved");
-        } else {
-            SavedCareer saved = SavedCareer.builder()
-                    .user(user)
-                    .career(career)
-                    .build();
-            savedCareerRepository.save(saved);
-            return Map.of("saved", true, "message", "Career saved successfully");
         }
+
+        SavedCareer saved = SavedCareer.builder()
+                .user(user)
+                .career(career)
+                .build();
+        savedCareerRepository.save(saved);
+        return Map.of("saved", true, "message", "Career saved successfully");
     }
 
     public boolean isSaved(Long careerId, String email) {
-        User user = getUser(email);
+        User user           = getUser(email);
         CareerDomain career = careerRepository.findById(careerId)
                 .orElseThrow(() -> new RuntimeException("Career not found"));
         return savedCareerRepository.existsByUserAndCareer(user, career);

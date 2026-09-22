@@ -7,228 +7,232 @@ const QUESTIONS = [
     id: 'q1',
     question: 'What kind of work excites you most?',
     options: [
-      { label: '💻 Building technology', value: 'technology' },
-      { label: '🎨 Creating things', value: 'creative' },
-      { label: '🤝 Helping people', value: 'helping' },
-      { label: '📊 Running a business', value: 'business' },
+      { label: 'Building technology and software', value: 'technology', icon: '💻' },
+      { label: 'Creating art, design or content',  value: 'creative',   icon: '🎨' },
+      { label: 'Helping and supporting people',    value: 'helping',    icon: '🤝' },
+      { label: 'Running a business or team',       value: 'business',   icon: '📊' },
     ]
   },
   {
     id: 'q2',
     question: 'Where do you prefer to work?',
     options: [
-      { label: '🏢 Office or remote desk', value: 'technology' },
-      { label: '🌿 Outdoors or in the field', value: 'outdoor' },
-      { label: '🏥 Hospital or community', value: 'helping' },
-      { label: '🎭 Studio or creative space', value: 'creative' },
+      { label: 'Office or remote desk',       value: 'technology', icon: '🏢' },
+      { label: 'Outdoors or in the field',    value: 'outdoor',    icon: '🌿' },
+      { label: 'Hospital or community space', value: 'helping',    icon: '🏥' },
+      { label: 'Studio or creative space',    value: 'creative',   icon: '🎭' },
     ]
   },
   {
     id: 'q3',
-    question: 'What subject did you enjoy most in school?',
+    question: 'Which subject did you enjoy most in school?',
     options: [
-      { label: '🔢 Math or Statistics', value: 'numbers' },
-      { label: '🔬 Science or Research', value: 'research' },
-      { label: '✍️ Language or Writing', value: 'communication' },
-      { label: '💡 Technology or Computers', value: 'technology' },
+      { label: 'Maths or Statistics',      value: 'numbers',      icon: '🔢' },
+      { label: 'Science or Research',      value: 'research',     icon: '🔬' },
+      { label: 'Language or Writing',      value: 'communication',icon: '✍️' },
+      { label: 'Technology or Computers',  value: 'technology',   icon: '💡' },
     ]
   },
   {
     id: 'q4',
     question: 'What motivates you the most?',
     options: [
-      { label: '💰 High earning potential', value: 'business' },
-      { label: '🌍 Making social impact', value: 'helping' },
-      { label: '🔍 Discovering new things', value: 'research' },
-      { label: '🎯 Solving complex problems', value: 'technology' },
+      { label: 'High earning potential',    value: 'business',   icon: '💰' },
+      { label: 'Making a social impact',    value: 'helping',    icon: '🌍' },
+      { label: 'Discovering new things',    value: 'research',   icon: '🔍' },
+      { label: 'Solving complex problems',  value: 'technology', icon: '🎯' },
     ]
   },
   {
     id: 'q5',
     question: 'How do you like to communicate?',
     options: [
-      { label: '📝 Writing and storytelling', value: 'communication' },
-      { label: '📊 Data and presentations', value: 'numbers' },
-      { label: '🤝 Face to face conversations', value: 'helping' },
-      { label: '💻 Code and technical docs', value: 'technology' },
+      { label: 'Writing and storytelling',  value: 'communication', icon: '📝' },
+      { label: 'Data and presentations',    value: 'numbers',       icon: '📊' },
+      { label: 'Face to face conversation', value: 'helping',       icon: '🤝' },
+      { label: 'Code and technical docs',   value: 'technology',    icon: '💻' },
     ]
   },
 ]
 
 export default function QuizPage() {
-  const [current, setCurrent] = useState(0)
-  const [answers, setAnswers] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState(null)
-  const [error, setError] = useState('')
+  const [current,  setCurrent]  = useState(0)
+  const [answers,  setAnswers]  = useState({})
+  const [loading,  setLoading]  = useState(false)
+  const [results,  setResults]  = useState(null)
+  const [error,    setError]    = useState('')
   const navigate = useNavigate()
 
-  const question = QUESTIONS[current]
-  const progress = Math.round((current / QUESTIONS.length) * 100)
-  const isLast = current === QUESTIONS.length - 1
+  const question   = QUESTIONS[current]
+  const progress   = Math.round((current / QUESTIONS.length) * 100)
+  const isLast     = current === QUESTIONS.length - 1
 
   const handleAnswer = async (value) => {
     const updated = { ...answers, [question.id]: value }
     setAnswers(updated)
-
-    if (!isLast) {
-      setCurrent(current + 1)
-      return
-    }
-
-    // Last question — submit
-    setLoading(true)
-    setError('')
+    if (!isLast) { setCurrent(c => c + 1); return }
+    setLoading(true); setError('')
     try {
       const res = await axiosClient.post('/recommendations', updated)
       setResults(res.data)
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleBack = () => {
-    if (current > 0) setCurrent(current - 1)
+    } finally { setLoading(false) }
   }
 
   const handleRetake = () => {
-    setAnswers({})
-    setCurrent(0)
-    setResults(null)
-    setError('')
+    setAnswers({}); setCurrent(0); setResults(null); setError('')
   }
 
-  // RESULTS SCREEN
-  if (results) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white px-6 py-12">
-        <div className="max-w-3xl mx-auto">
+  // Loading
+  if (loading) return (
+    <div className="min-h-screen bg-[#F8FFFD] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-2 border-[#14B88A] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+        <h2 className="text-xl font-bold text-[#0F172A] mb-2">Analysing your answers...</h2>
+        <p className="text-[#64748B] text-sm">Finding the best career matches for you</p>
+      </div>
+    </div>
+  )
 
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-4">🎯</div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
-              Your Career Matches
-            </h1>
-            <p className="text-gray-500">
-              Based on your interests, here are the best career paths for you.
-            </p>
+  // Results
+  if (results) return (
+    <div className="min-h-screen bg-[#F8FFFD]">
+      <div className="bg-white border-b border-[#DCEFE8]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+          <div className="inline-flex items-center gap-2 bg-[#E6F7F2] border border-[#14B88A]/20 text-[#0D8F6A] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
+            Quiz complete
           </div>
-
-          <div className="space-y-4 mb-8">
-            {results.recommendations?.map((career, index) => (
-              <div
-                key={career.id}
-                onClick={() => navigate(`/career/${career.slug || career.id}`)}
-                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center font-bold text-lg">
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-gray-800">{career.name}</h3>
-                      <span className="text-green-600 font-semibold text-sm">
-                        {career.averageSalary}
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1 line-clamp-1">
-                      {career.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {career.requiredSkills?.split(',').slice(0, 3).map(skill => (
-                        <span key={skill}
-                          className="bg-indigo-50 text-indigo-600 text-xs px-2 py-1 rounded-full">
-                          {skill.trim()}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <span className="text-indigo-400 text-lg">→</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-4 justify-center">
-            <button onClick={handleRetake}
-              className="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-indigo-50 transition">
-              Retake Quiz
-            </button>
-            <button onClick={() => navigate('/explore')}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition">
-              Explore All Careers
-            </button>
-          </div>
-
+          <h1 className="text-3xl font-extrabold text-[#0F172A] tracking-tight mb-2">
+            Your career matches
+          </h1>
+          <p className="text-[#64748B]">
+            Based on your interests, here are the best career paths for you.
+          </p>
         </div>
       </div>
-    )
-  }
 
-  // LOADING SCREEN
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-indigo-50">
-        <div className="text-5xl mb-6 animate-bounce">🔍</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Analyzing your answers...</h2>
-        <p className="text-gray-500">Finding the best career matches for you</p>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        <div className="space-y-4 mb-8">
+          {results.recommendations?.map((career, index) => (
+            <div
+              key={career.id}
+              onClick={() => navigate(`/career/${career.slug || career.id}`)}
+              className="bg-white border border-[#DCEFE8] rounded-2xl p-5 flex items-center gap-4 hover:border-[#14B88A]/40 hover:shadow-md transition-all duration-200 cursor-pointer group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#E6F7F2] text-[#14B88A] flex items-center justify-center font-extrabold text-lg flex-shrink-0">
+                {index + 1}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h3 className="font-bold text-[#0F172A] group-hover:text-[#14B88A] transition-colors truncate">
+                    {career.name}
+                  </h3>
+                  <span className="text-sm font-bold text-[#14B88A] flex-shrink-0">
+                    {career.averageSalary}
+                  </span>
+                </div>
+                <p className="text-sm text-[#64748B] line-clamp-1">{career.description}</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {career.requiredSkills?.split(',').slice(0, 3).map(skill => (
+                    <span key={skill} className="text-[11px] font-medium px-2 py-0.5 bg-[#F8FFFD] border border-[#DCEFE8] text-[#64748B] rounded-full">
+                      {skill.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <svg className="w-4 h-4 text-[#14B88A] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button onClick={handleRetake}
+            className="inline-flex items-center justify-center gap-2 border border-[#DCEFE8] bg-white text-[#0F172A] font-semibold px-6 py-2.5 rounded-xl text-sm hover:border-[#14B88A] hover:text-[#14B88A] transition-all">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Retake quiz
+          </button>
+          <button onClick={() => navigate('/explore')}
+            className="inline-flex items-center justify-center gap-2 bg-[#14B88A] hover:bg-[#0D8F6A] text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-all active:scale-[0.98]">
+            Explore all careers
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </button>
+        </div>
       </div>
-    )
-  }
+    </div>
+  )
 
-  // QUIZ SCREEN
+  // Quiz
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white px-6 py-12">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#F8FFFD] flex flex-col">
+      <div className="max-w-2xl mx-auto w-full px-4 sm:px-6 py-12 flex-1 flex flex-col">
 
         {/* Progress */}
-        <div className="mb-8">
-          <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>Question {current + 1} of {QUESTIONS.length}</span>
-            <span>{progress}% complete</span>
+        <div className="mb-10">
+          <div className="flex items-center justify-between text-sm mb-3">
+            <span className="font-semibold text-[#0F172A]">
+              Question {current + 1} <span className="text-[#94A3B8]">of {QUESTIONS.length}</span>
+            </span>
+            <span className="text-[#14B88A] font-bold">{progress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full h-1.5 bg-[#DCEFE8] rounded-full overflow-hidden">
             <div
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+              className="h-full bg-[#14B88A] rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
-        {/* Question Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-6">
-          <h2 className="text-2xl font-extrabold text-gray-900 mb-8">
-            {question.question}
-          </h2>
+        {/* Question */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="mb-10">
+            <div className="inline-flex items-center gap-2 bg-[#E6F7F2] border border-[#14B88A]/20 text-[#0D8F6A] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-5">
+              Career Quiz
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-snug">
+              {question.question}
+            </h2>
+          </div>
 
-          <div className="space-y-3">
+          {/* Options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {question.options.map(option => (
               <button
                 key={option.value}
                 onClick={() => handleAnswer(option.value)}
-                className="w-full text-left px-5 py-4 rounded-xl border border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-150 text-gray-700 font-medium text-lg"
+                className="group flex items-center gap-4 p-4 bg-white border border-[#DCEFE8] rounded-2xl text-left hover:border-[#14B88A] hover:bg-[#E6F7F2]/40 hover:shadow-sm transition-all duration-150 active:scale-[0.98]"
               >
-                {option.label}
+                <div className="w-10 h-10 rounded-xl bg-[#F8FFFD] border border-[#DCEFE8] flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-[#E6F7F2] group-hover:border-[#14B88A]/30 transition-colors">
+                  {option.icon}
+                </div>
+                <span className="text-sm font-semibold text-[#0F172A] group-hover:text-[#0D8F6A] transition-colors leading-snug">
+                  {option.label}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Back button */}
-        {current > 0 && (
-          <button onClick={handleBack}
-            className="text-gray-400 hover:text-gray-600 transition text-sm">
-            ← Back
-          </button>
-        )}
+        {/* Back */}
+        <div className="mt-10 flex items-center justify-between">
+          {current > 0 ? (
+            <button onClick={() => setCurrent(c => c - 1)}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] hover:text-[#0F172A] transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+              </svg>
+              Back
+            </button>
+          ) : <div />}
 
-        {error && (
-          <p className="text-red-500 text-sm mt-4 text-center">{error}</p>
-        )}
-
+          {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+        </div>
       </div>
     </div>
   )

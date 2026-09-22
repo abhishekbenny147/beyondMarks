@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/saved")
+@RequestMapping("/api/v1/saved")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class SavedCareerController {

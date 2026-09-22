@@ -5,6 +5,7 @@ import com.beyondmarks.demo.entity.StudentStory;
 import com.beyondmarks.demo.repository.StoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -27,15 +28,15 @@ public class StoryService {
     }
 
     public StudentStory submit(StoryDto dto, String email) {
+        boolean anon = dto.getIsAnonymous() != null && dto.getIsAnonymous();
         StudentStory story = StudentStory.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .careerName(dto.getCareerName())
-                .authorName(dto.getIsAnonymous() != null && dto.getIsAnonymous()
-                        ? "Anonymous" : dto.getAuthorName())
                 .authorEmail(email)
+                .authorName(anon ? "Anonymous" : dto.getAuthorName())
                 .photoUrl(dto.getPhotoUrl())
-                .isAnonymous(dto.getIsAnonymous() != null && dto.getIsAnonymous())
+                .isAnonymous(anon)
                 .status(StudentStory.Status.PENDING)
                 .build();
         return repository.save(story);

@@ -27,23 +27,18 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-          .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                 "/api/auth/**",
-                       "/api/careers/**",
-                       "/api/domains/**",
-                       "/api/stories",
-                       "/api/stories/**",
-                       "/api/hidden-careers",
-                       "/api/hidden-careers/**",
-                       "/api/recommendations/**",
-                       "/api/saved/**",
-                       "/",
-                       "/careers"
-                    ).permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
-       )
+      "/api/v1/auth/**",
+                   "/api/v1/careers/**",
+                   "/api/v1/hidden-careers/**",
+                   "/api/v1/stories",
+                   "/api/v1/recommendations/**",
+                   "/"
+               ).permitAll()
+              .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+           .anyRequest().authenticated()
+    )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

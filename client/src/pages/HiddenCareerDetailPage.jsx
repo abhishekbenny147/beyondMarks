@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from '../api/axiosClient'
 import useAuthStore from '../store/authStore'
@@ -10,8 +10,9 @@ const fetchGuide = (id) =>
   axiosClient.get(`/hidden-careers/${id}/guide`).then(r => r.data)
 
 export default function HiddenCareerDetailPage() {
-  const { id } = useParams()
-  const { user } = useAuthStore()
+  const { id }      = useParams()
+  const { user }    = useAuthStore()
+  const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
   const { data: career, isLoading } = useQuery({
@@ -31,196 +32,249 @@ export default function HiddenCareerDetailPage() {
   })
 
   if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen bg-[#F8FFFD] flex items-center justify-center">
       <div className="text-center">
-        <div className="text-5xl mb-4 animate-bounce">🔍</div>
-        <p className="text-gray-500 text-lg">Loading hidden career...</p>
+        <div className="w-12 h-12 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-[#64748B] text-sm">Loading hidden career...</p>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FFFD]">
 
-      {/* Hero */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-16">
-        <div className="max-w-5xl mx-auto">
-          <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-            🔍 Hidden Career · {career?.category}
-          </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">{career?.title}</h1>
-          <p className="text-purple-100 text-lg max-w-2xl leading-relaxed">{career?.description}</p>
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      <div className="bg-white border-b border-[#DCEFE8]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
 
-          <div className="flex flex-wrap gap-6 mt-8">
-            <div className="bg-white/10 rounded-xl px-5 py-3">
-              <p className="text-purple-200 text-xs uppercase tracking-wide mb-1">Avg Salary</p>
-              <p className="text-white font-bold text-xl">{career?.averageSalary}</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3">
-              <p className="text-purple-200 text-xs uppercase tracking-wide mb-1">Curiosity Score</p>
-              <p className="text-white font-bold text-xl">🔥 {career?.curiosityScore}</p>
-            </div>
-            <button
-              onClick={() => user && upvote.mutate()}
-              className={`bg-white/20 hover:bg-white/30 transition rounded-xl px-5 py-3 font-semibold
-                ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              🔥 {user ? 'Upvote this career' : 'Login to upvote'}
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-[#94A3B8] mb-6">
+            <button onClick={() => navigate('/hidden')} className="hover:text-[#7C3AED] transition-colors">
+              Hidden Careers
             </button>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-[#0F172A] font-medium">{career?.title}</span>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 bg-[#EDE9FE] border border-[#7C3AED]/20 text-[#7C3AED] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Hidden Career · {career?.category}
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-3">
+                {career?.title}
+              </h1>
+              <p className="text-[#64748B] text-base leading-relaxed max-w-2xl">
+                {career?.description}
+              </p>
+            </div>
+
+            <div className="flex md:flex-col gap-3 flex-shrink-0">
+              <div className="bg-[#E6F7F2] rounded-2xl px-5 py-3 text-center min-w-[120px]">
+                <p className="text-xs text-[#0D8F6A] font-semibold uppercase tracking-wide mb-1">Avg Salary</p>
+                <p className="text-lg font-extrabold text-[#0D8F6A]">{career?.averageSalary}</p>
+              </div>
+              <button
+                onClick={() => user && upvote.mutate()}
+                className={`rounded-2xl px-5 py-3 text-center min-w-[120px] transition-all ${
+                  user
+                    ? 'bg-[#EDE9FE] hover:bg-[#7C3AED] hover:text-white cursor-pointer'
+                    : 'bg-[#F8FFFD] border border-[#DCEFE8] cursor-not-allowed'
+                }`}
+              >
+                <p className="text-xs text-[#7C3AED] font-semibold uppercase tracking-wide mb-1">Curiosity</p>
+                <p className="text-lg font-extrabold text-[#7C3AED]">🔥 {career?.curiosityScore}</p>
+              </button>
+            </div>
+          </div>
+
+          {/* Why hidden + tip */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div className="bg-[#EDE9FE]/40 border border-[#7C3AED]/15 rounded-2xl p-4">
+              <p className="text-xs font-bold text-[#7C3AED] uppercase tracking-widest mb-2">💡 Why it's hidden</p>
+              <p className="text-sm text-[#64748B] leading-relaxed">{career?.whyHidden}</p>
+            </div>
+            <div className="bg-amber-50/60 border border-amber-200/60 rounded-2xl p-4">
+              <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2">🗺️ Discovery tip</p>
+              <p className="text-sm text-[#64748B] leading-relaxed">{career?.discoveryTip}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-12 space-y-8">
-
-        {/* Why Hidden + Discovery Tip */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-purple-50 rounded-2xl p-6 border border-purple-100">
-            <h2 className="text-lg font-extrabold text-purple-800 mb-3">💡 Why It's Hidden</h2>
-            <p className="text-purple-700 leading-relaxed">{career?.whyHidden}</p>
-          </div>
-          <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
-            <h2 className="text-lg font-extrabold text-amber-800 mb-3">🗺️ Discovery Tip</h2>
-            <p className="text-amber-700 leading-relaxed">{career?.discoveryTip}</p>
-          </div>
-        </div>
+      {/* ── Guide content ───────────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
 
         {guideLoading ? (
-          <div className="text-center py-20">
-            <div className="text-4xl mb-4 animate-spin">⚙️</div>
-            <p className="text-gray-500">Generating your career guide...</p>
+          <div className="space-y-6 animate-pulse">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white border border-[#DCEFE8] rounded-2xl p-6">
+                <div className="h-4 bg-[#EDE9FE] rounded-lg w-1/4 mb-4" />
+                <div className="space-y-2">
+                  <div className="h-3 bg-[#EDE9FE] rounded-lg w-full" />
+                  <div className="h-3 bg-[#EDE9FE] rounded-lg w-5/6" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : guide ? (
           <>
-            {/* Day in the Life */}
-            <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-              <h2 className="text-2xl font-extrabold text-gray-900 mb-4">☀️ A Day in the Life</h2>
-              <p className="text-gray-600 text-lg leading-relaxed">{guide.dayInLife}</p>
-            </section>
+            {/* Day in the life */}
+            <HSection icon="☀️" title="A Day in the Life">
+              <p className="text-[#64748B] leading-relaxed">{guide.dayInLife}</p>
+            </HSection>
 
             {/* Roadmap */}
-            <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-              <h2 className="text-2xl font-extrabold text-gray-900 mb-8">
-                🗺️ Your Roadmap to Become a {career?.title}
-              </h2>
-              <div className="relative">
-                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-purple-100" />
-                <div className="space-y-6">
-                  {guide.roadmap?.map((step, index) => (
-                    <div key={index} className="flex gap-6 relative">
-                      <div className="w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0 z-10 shadow-md">
+            <HSection icon="🗺️" title={`Your Roadmap to Become a ${career?.title}`}>
+              <div className="space-y-4">
+                {guide.roadmap?.map((step, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-9 h-9 rounded-full bg-[#7C3AED] text-white flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-sm">
                         {step.step}
                       </div>
-                      <div className="flex-1 bg-purple-50 rounded-2xl p-5 border border-purple-100">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-bold text-gray-800">{step.title}</h3>
-                          <span className="text-xs font-semibold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
-                            {step.duration}
-                          </span>
-                        </div>
-                        <p className="text-gray-600">{step.description}</p>
-                      </div>
+                      {i < guide.roadmap.length - 1 && (
+                        <div className="w-px flex-1 bg-[#DCEFE8] mt-2" />
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className={`flex-1 bg-[#F8FFFD] border border-[#DCEFE8] rounded-2xl p-4 ${i < guide.roadmap.length - 1 ? 'mb-2' : ''}`}>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                        <h4 className="font-bold text-[#0F172A] text-sm">{step.title}</h4>
+                        <span className="inline-flex text-xs font-semibold text-[#7C3AED] bg-[#EDE9FE] px-2.5 py-0.5 rounded-full whitespace-nowrap w-fit">
+                          {step.duration}
+                        </span>
+                      </div>
+                      <p className="text-sm text-[#64748B] leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </section>
+            </HSection>
 
             {/* Skills + Salary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                <h2 className="text-xl font-extrabold text-gray-900 mb-4">🛠️ Required Skills</h2>
+              <HSection icon="🛠️" title="Required Skills">
                 <div className="flex flex-wrap gap-2">
                   {career?.requiredSkills?.split(',').map(skill => (
                     <span key={skill}
-                      className="bg-purple-50 text-purple-700 text-sm font-medium px-3 py-2 rounded-xl border border-purple-100">
+                      className="text-sm font-medium px-3 py-1.5 bg-[#EDE9FE] text-[#7C3AED] border border-[#7C3AED]/20 rounded-xl">
                       {skill.trim()}
                     </span>
                   ))}
                 </div>
-              </section>
+              </HSection>
 
-              <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                <h2 className="text-xl font-extrabold text-gray-900 mb-4">💰 Salary Breakdown</h2>
+              <HSection icon="💰" title="Salary Breakdown">
                 <div className="space-y-3">
                   {[
-                    { label: 'Entry Level', value: guide.salaryBreakdown?.entry, color: 'bg-green-100 text-green-700' },
-                    { label: 'Mid Level', value: guide.salaryBreakdown?.mid, color: 'bg-blue-100 text-blue-700' },
-                    { label: 'Senior Level', value: guide.salaryBreakdown?.senior, color: 'bg-purple-100 text-purple-700' },
+                    { label: 'Entry Level',  value: guide.salaryBreakdown?.entry,  color: 'bg-green-50  text-green-700  border-green-200'  },
+                    { label: 'Mid Level',    value: guide.salaryBreakdown?.mid,    color: 'bg-blue-50   text-blue-700   border-blue-200'   },
+                    { label: 'Senior Level', value: guide.salaryBreakdown?.senior, color: 'bg-purple-50 text-purple-700 border-purple-200' },
                   ].map(tier => (
                     <div key={tier.label} className="flex items-center justify-between">
-                      <span className="text-gray-600 font-medium">{tier.label}</span>
-                      <span className={`${tier.color} font-bold px-3 py-1 rounded-full text-sm`}>
+                      <span className="text-sm text-[#64748B] font-medium">{tier.label}</span>
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full border ${tier.color}`}>
                         {tier.value}
                       </span>
                     </div>
                   ))}
                 </div>
-              </section>
+              </HSection>
             </div>
 
-            {/* Top Companies */}
-            <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h2 className="text-xl font-extrabold text-gray-900 mb-4">🏢 Where You Can Work</h2>
-              <div className="flex flex-wrap gap-3">
+            {/* Companies */}
+            <HSection icon="🏢" title="Where You Can Work">
+              <div className="flex flex-wrap gap-2">
                 {guide.topCompanies?.map(company => (
                   <span key={company}
-                    className="bg-gray-100 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm border border-gray-200">
+                    className="text-sm font-semibold px-4 py-2 bg-white border border-[#DCEFE8] text-[#0F172A] rounded-xl hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors cursor-default">
                     {company}
                   </span>
                 ))}
               </div>
-            </section>
+            </HSection>
 
-            {/* Pros and Cons */}
+            {/* Pros + Cons */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                <h2 className="text-xl font-extrabold text-gray-900 mb-4">✅ Pros</h2>
-                <ul className="space-y-3">
+              <HSection icon="✅" title="Pros">
+                <ul className="space-y-2.5">
                   {guide.prosAndCons?.pros?.map((pro, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
-                      <span className="text-gray-600">{pro}</span>
+                    <li key={i} className="flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-[#64748B] leading-relaxed">{pro}</span>
                     </li>
                   ))}
                 </ul>
-              </section>
-              <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                <h2 className="text-xl font-extrabold text-gray-900 mb-4">⚠️ Cons</h2>
-                <ul className="space-y-3">
+              </HSection>
+              <HSection icon="⚠️" title="Cons">
+                <ul className="space-y-2.5">
                   {guide.prosAndCons?.cons?.map((con, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <span className="text-red-400 mt-0.5 flex-shrink-0">✗</span>
-                      <span className="text-gray-600">{con}</span>
+                    <li key={i} className="flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-[#64748B] leading-relaxed">{con}</span>
                     </li>
                   ))}
                 </ul>
-              </section>
+              </HSection>
             </div>
 
             {/* Resources */}
-            <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h2 className="text-xl font-extrabold text-gray-900 mb-4">📚 Best Resources to Get Started</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <HSection icon="📚" title="Best Resources to Get Started">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {guide.resources?.map((res, i) => (
                   <a key={i} href={res.url} target="_blank" rel="noopener noreferrer"
-                    className="border border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-50 transition group">
-                    <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">
-                      {res.type}
+                    className="group flex flex-col gap-1 p-4 bg-[#F8FFFD] border border-[#DCEFE8] rounded-xl hover:border-[#7C3AED] hover:bg-[#EDE9FE]/40 transition-all">
+                    <span className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-widest">{res.type}</span>
+                    <span className="text-sm font-semibold text-[#0F172A] group-hover:text-[#7C3AED] transition-colors">{res.name}</span>
+                    <span className="text-xs text-[#94A3B8] flex items-center gap-1 mt-auto">
+                      Visit
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
                     </span>
-                    <p className="font-bold text-gray-800 mt-1 group-hover:text-purple-700 transition">
-                      {res.name}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">Visit →</p>
                   </a>
                 ))}
               </div>
-            </section>
-
+            </HSection>
           </>
         ) : null}
 
+        {/* Back */}
+        <div className="flex justify-center pt-4 pb-8">
+          <button onClick={() => navigate('/hidden')}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] hover:text-[#7C3AED] transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+            </svg>
+            Back to Hidden Careers
+          </button>
+        </div>
       </div>
+    </div>
+  )
+}
+
+function HSection({ icon, title, children }) {
+  return (
+    <div className="bg-white border border-[#DCEFE8] rounded-2xl p-6">
+      <h2 className="flex items-center gap-2 text-base font-bold text-[#0F172A] mb-4">
+        <span>{icon}</span>
+        {title}
+      </h2>
+      {children}
     </div>
   )
 }

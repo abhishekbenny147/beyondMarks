@@ -2,7 +2,6 @@ package com.beyondmarks.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "student_stories")
@@ -34,9 +33,6 @@ public class StudentStory {
 
     @Builder.Default
     private Boolean isAnonymous = false;
-
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum Status { PENDING, APPROVED, REJECTED }
 }

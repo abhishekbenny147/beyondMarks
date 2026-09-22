@@ -2,7 +2,6 @@ package com.beyondmarks.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -29,11 +28,5 @@ public class User {
     @Builder.Default
     private Role role = Role.STUDENT;
 
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    public enum Role {
-        STUDENT, ADMIN
-    }
+    public enum Role { STUDENT, ADMIN }
 }

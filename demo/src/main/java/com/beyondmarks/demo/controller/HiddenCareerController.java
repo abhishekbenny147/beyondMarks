@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/hidden-careers")
+@RequestMapping("/api/v1/hidden-careers")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class HiddenCareerController {

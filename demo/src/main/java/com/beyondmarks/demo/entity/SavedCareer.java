@@ -2,7 +2,6 @@ package com.beyondmarks.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "saved_careers")
@@ -23,7 +22,4 @@ public class SavedCareer {
     @ManyToOne
     @JoinColumn(name = "career_id", nullable = false)
     private CareerDomain career;
-
-    @Builder.Default
-    private LocalDateTime savedAt = LocalDateTime.now();
 }

@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getHiddenCareers, upvoteHiddenCareer } from '../api/hiddenCareers'
-import useAuthStore from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
+
 export default function HiddenCareersPage() {
-  const { user } = useAuthStore()
+  const { user }    = useAuthStore()
+  const navigate    = useNavigate()
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
 
   const { data: careers, isLoading } = useQuery({
     queryKey: ['hidden-careers'],
@@ -18,65 +19,110 @@ export default function HiddenCareersPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-12">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-[#F8FFFD]">
 
-        {/* Header */}
-        <div className="text-center mb-12">
-          <span className="inline-block bg-purple-100 text-purple-700 text-sm font-semibold px-4 py-1 rounded-full mb-4">
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      <div className="bg-white border-b border-[#DCEFE8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+          <div className="inline-flex items-center gap-2 bg-[#EDE9FE] border border-[#7C3AED]/20 text-[#7C3AED] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
             Off the beaten path
-          </span>
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-3">Hidden Careers</h1>
-          <p className="text-gray-500 max-w-xl mx-auto">
-            Careers most students never hear about in school — but that are fulfilling, well-paid, and in demand.
+          </div>
+          <h1 className="text-3xl font-extrabold text-[#0F172A] tracking-tight mb-2">
+            Hidden Careers
+          </h1>
+          <p className="text-[#64748B] max-w-xl">
+            Careers most students never hear about in school — but that are fulfilling,
+            well-paid, and in demand. Sorted by student curiosity.
           </p>
         </div>
+      </div>
 
-        {/* Grid */}
+      {/* ── Grid ───────────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 animate-pulse h-48 border border-gray-100" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-[#DCEFE8] p-6 animate-pulse">
+                <div className="h-4 bg-[#EDE9FE] rounded-lg w-1/3 mb-3" />
+                <div className="h-5 bg-[#EDE9FE] rounded-lg w-1/2 mb-3" />
+                <div className="h-3 bg-[#EDE9FE] rounded-lg w-full mb-2" />
+                <div className="h-3 bg-[#EDE9FE] rounded-lg w-4/5" />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {careers?.map(career => (
               <div key={career.id}
-                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition">
+                className="group bg-white rounded-2xl border border-[#DCEFE8] p-6 hover:border-[#7C3AED]/40 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col">
 
+                {/* Top */}
                 <div className="flex items-start justify-between mb-3">
-                  <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-[#EDE9FE] text-[#7C3AED] border border-[#7C3AED]/20">
                     {career.category}
                   </span>
-                  <span className="text-green-600 font-semibold text-sm">{career.averageSalary}</span>
+                  <span className="text-sm font-bold text-[#14B88A]">{career.averageSalary}</span>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{career.title}</h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">{career.description}</p>
+                {/* Title */}
+                <h3 className="text-base font-bold text-[#0F172A] mb-2 group-hover:text-[#7C3AED] transition-colors">
+                  {career.title}
+                </h3>
+                <p className="text-sm text-[#64748B] leading-relaxed line-clamp-2 mb-4">
+                  {career.description}
+                </p>
 
-                <div className="bg-purple-50 rounded-xl p-3 mb-4">
-                  <p className="text-xs font-semibold text-purple-600 mb-1">💡 Why it's hidden</p>
-                  <p className="text-sm text-gray-600">{career.whyHidden}</p>
+                {/* Why hidden */}
+                <div className="bg-[#EDE9FE]/40 border border-[#7C3AED]/15 rounded-xl p-3 mb-3">
+                  <p className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-widest mb-1">
+                    💡 Why it's hidden
+                  </p>
+                  <p className="text-xs text-[#64748B] leading-relaxed">{career.whyHidden}</p>
                 </div>
 
-                <div className="bg-amber-50 rounded-xl p-3 mb-4">
-                  <p className="text-xs font-semibold text-amber-600 mb-1">🗺️ Discovery tip</p>
-                  <p className="text-sm text-gray-600">{career.discoveryTip}</p>
+                {/* Discovery tip */}
+                <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-3 mb-4">
+                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">
+                    🗺️ Discovery tip
+                  </p>
+                  <p className="text-xs text-[#64748B] leading-relaxed">{career.discoveryTip}</p>
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
-                   <button
-                     onClick={() => user && upvote.mutate(career.id)}
-                     className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition
-                     ${user ? 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 cursor-pointer' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
+                {/* Skills */}
+                <div className="flex flex-wrap gap-1.5 mb-4 flex-1">
+                  {career.requiredSkills?.split(',').slice(0, 3).map(skill => (
+                    <span key={skill} className="text-[11px] font-medium px-2 py-0.5 bg-[#F8FFFD] border border-[#DCEFE8] text-[#64748B] rounded-full">
+                      {skill.trim()}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-[#DCEFE8]">
+                  <button
+                    onClick={() => user && upvote.mutate(career.id)}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
+                      user
+                        ? 'bg-[#EDE9FE] text-[#7C3AED] hover:bg-[#7C3AED] hover:text-white cursor-pointer'
+                        : 'bg-[#F8FFFD] text-[#94A3B8] cursor-not-allowed'
+                    }`}
+                    title={!user ? 'Sign in to upvote' : ''}
+                  >
                     🔥 {career.curiosityScore}
-                   </button>
-                   <button
-                     onClick={() => navigate(`/hidden/${career.id}`)}
-                     className="text-purple-600 font-semibold text-sm hover:underline">
-                    View Guide →
-                   </button>
+                    <span className="text-xs opacity-70">curious</span>
+                  </button>
+                  <button
+                    onClick={() => navigate(`/hidden/${career.id}`)}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0F172A] hover:text-[#7C3AED] transition-colors"
+                  >
+                    View guide
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             ))}

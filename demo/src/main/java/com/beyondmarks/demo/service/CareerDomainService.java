@@ -37,7 +37,7 @@ public class CareerDomainService {
     }
 
     public List<CareerDomain> searchAndFilter(String query, String category) {
-        String q = (query == null || query.isBlank()) ? null : query;
+        String q   = (query    == null || query.isBlank())    ? null : query;
         String cat = (category == null || category.isBlank()) ? null : category;
         return repository.searchAndFilter(q, cat);
     }

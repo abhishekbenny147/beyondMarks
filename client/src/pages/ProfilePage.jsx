@@ -5,8 +5,8 @@ import useAuthStore from '../store/authStore'
 
 export default function ProfilePage() {
   const { user, logout } = useAuthStore()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const navigate         = useNavigate()
+  const queryClient      = useQueryClient()
 
   const { data: saved, isLoading } = useQuery({
     queryKey: ['saved'],
@@ -19,193 +19,189 @@ export default function ProfilePage() {
     onSuccess: () => queryClient.invalidateQueries(['saved']),
   })
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+  const handleLogout = () => { logout(); navigate('/') }
 
-  if (!user) {
-    navigate('/login')
-    return null
-  }
+  if (!user) { navigate('/login'); return null }
 
   const initials = user.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FFFD]">
 
-      {/* Profile Hero Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-12">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-end gap-6">
-          <div className="w-24 h-24 rounded-2xl bg-white/20 text-white flex items-center justify-center text-4xl font-extrabold shadow-lg border-2 border-white/30">
-            {initials}
-          </div>
-          <div className="flex-1 text-center md:text-left">
-            <p className="text-indigo-200 text-sm font-semibold uppercase tracking-widest mb-1">Student Profile</p>
-            <h1 className="text-4xl font-extrabold text-white mb-1">{user.name}</h1>
-            <p className="text-indigo-200">{user.email}</p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/quiz"
-              className="bg-white text-indigo-600 px-5 py-2 rounded-xl font-semibold hover:bg-indigo-50 transition text-sm">
-              🎯 Retake Quiz
-            </Link>
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      <div className="bg-white border-b border-[#DCEFE8]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-[#14B88A] text-white flex items-center justify-center text-2xl font-extrabold flex-shrink-0 shadow-sm">
+              {initials}
+            </div>
+            <div className="flex-1">
+              <h1 className="text-2xl font-extrabold text-[#0F172A] tracking-tight">{user.name}</h1>
+              <p className="text-[#64748B] text-sm mt-0.5">{user.email}</p>
+              <span className={`inline-flex items-center mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                user.role === 'ADMIN'
+                  ? 'bg-red-50 text-red-600 border border-red-200'
+                  : 'bg-[#E6F7F2] text-[#0D8F6A] border border-[#14B88A]/20'
+              }`}>
+                {user.role}
+              </span>
+            </div>
             <button onClick={handleLogout}
-              className="bg-white/10 border border-white/30 text-white px-5 py-2 rounded-xl font-semibold hover:bg-white/20 transition text-sm">
-              Logout
+              className="inline-flex items-center gap-2 border border-[#DCEFE8] bg-white text-[#64748B] font-semibold px-4 py-2 rounded-xl text-sm hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign out
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: '❤️', label: 'Saved Careers', value: saved?.length || 0, color: 'text-red-500' },
-            { icon: '🎓', label: 'Account Type', value: user.role, color: 'text-indigo-600' },
-            { icon: '✅', label: 'Status', value: 'Active', color: 'text-green-600' },
-            { icon: '🔍', label: 'Platform', value: 'beyondMarks', color: 'text-purple-600' },
-          ].map(stat => (
-            <div key={stat.label}
-              className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center hover:shadow-md transition">
-              <div className="text-3xl mb-2">{stat.icon}</div>
-              <p className={`text-xl font-extrabold ${stat.color}`}>{stat.value}</p>
-              <p className="text-gray-400 text-xs mt-1 font-medium uppercase tracking-wide">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* Saved Careers — takes 2 columns */}
-          <div className="md:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-extrabold text-gray-900">❤️ Saved Careers</h2>
-                <p className="text-gray-400 text-sm mt-0.5">{saved?.length || 0} careers bookmarked</p>
+          {/* ── Left — Saved careers ── */}
+          <div className="lg:col-span-2">
+            <div className="bg-white border border-[#DCEFE8] rounded-2xl overflow-hidden">
+              <div className="px-6 py-5 border-b border-[#DCEFE8] flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-bold text-[#0F172A]">Saved Careers</h2>
+                  <p className="text-xs text-[#94A3B8] mt-0.5">{saved?.length || 0} bookmarked</p>
+                </div>
+                <Link to="/explore"
+                  className="text-xs font-semibold text-[#14B88A] hover:text-[#0D8F6A] transition-colors">
+                  + Explore more
+                </Link>
               </div>
-              <Link to="/explore"
-                className="text-indigo-600 text-sm font-semibold hover:underline">
-                + Add More
-              </Link>
-            </div>
 
-            <div className="divide-y divide-gray-50">
               {isLoading ? (
                 <div className="p-6 space-y-3">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-16" />
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-16 bg-[#E6F7F2] rounded-xl animate-pulse" />
                   ))}
                 </div>
               ) : saved?.length === 0 ? (
                 <div className="text-center py-16 px-6">
-                  <div className="text-5xl mb-4">🔍</div>
-                  <p className="text-gray-500 font-medium mb-2">No saved careers yet</p>
-                  <p className="text-gray-400 text-sm mb-6">Explore careers and click the ❤️ to save them here</p>
+                  <div className="w-12 h-12 bg-[#E6F7F2] rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-[#14B88A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-[#0F172A] font-semibold text-sm mb-1">No saved careers yet</p>
+                  <p className="text-[#94A3B8] text-xs mb-5">Explore careers and save the ones that interest you</p>
                   <Link to="/explore"
-                    className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition text-sm">
-                    Explore Careers
+                    className="inline-flex items-center gap-2 bg-[#14B88A] hover:bg-[#0D8F6A] text-white font-semibold px-5 py-2 rounded-xl text-sm transition-all">
+                    Explore careers
                   </Link>
                 </div>
               ) : (
-                saved?.map((item, index) => (
-                  <div key={item.id}
-                    className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition group">
-
-                    {/* Rank */}
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {index + 1}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-gray-800 group-hover:text-indigo-700 transition truncate">
-                        {item.career.name}
-                      </p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        <span className="text-xs text-gray-400">{item.career.category}</span>
-                        <span className="text-xs text-green-600 font-semibold">{item.career.averageSalary}</span>
+                <div className="divide-y divide-[#DCEFE8]">
+                  {saved.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-4 px-6 py-4 hover:bg-[#F8FFFD] transition-colors group">
+                      <div className="w-8 h-8 rounded-xl bg-[#E6F7F2] text-[#14B88A] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-[#0F172A] group-hover:text-[#14B88A] transition-colors truncate">
+                          {item.career.name}
+                        </p>
+                        <p className="text-xs text-[#94A3B8] mt-0.5">
+                          {item.career.category} · <span className="text-[#14B88A] font-semibold">{item.career.averageSalary}</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Link to={`/career/${item.career.slug || item.career.id}`}
+                          className="text-xs font-semibold text-[#64748B] hover:text-[#14B88A] px-3 py-1.5 rounded-lg border border-[#DCEFE8] hover:border-[#14B88A] transition-all">
+                          View
+                        </Link>
+                        <button onClick={() => unsaveMutation.mutate(item.career.id)}
+                          className="text-xs font-semibold text-[#94A3B8] hover:text-red-500 px-3 py-1.5 rounded-lg border border-[#DCEFE8] hover:border-red-200 hover:bg-red-50 transition-all">
+                          Remove
+                        </button>
                       </div>
                     </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <Link to={`/career/${item.career.slug || item.career.id}`}
-                        className="text-xs text-indigo-600 font-semibold px-3 py-1.5 rounded-lg border border-indigo-200 hover:bg-indigo-50 transition">
-                        View Guide
-                      </Link>
-                      <button
-                        onClick={() => unsaveMutation.mutate(item.career.id)}
-                        className="text-xs text-red-400 font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-50 transition"
-                        title="Remove from saved"
-                      >
-                        ✕ Remove
-                      </button>
-                    </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
+          {/* ── Right ── */}
+          <div className="space-y-5">
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 className="text-lg font-extrabold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-2">
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { icon: '❤️', label: 'Saved',   value: saved?.length || 0 },
+                { icon: '✅', label: 'Status',  value: 'Active'           },
+              ].map(stat => (
+                <div key={stat.label} className="bg-white border border-[#DCEFE8] rounded-2xl p-4 text-center">
+                  <div className="text-2xl mb-1">{stat.icon}</div>
+                  <div className="text-lg font-extrabold text-[#0F172A]">{stat.value}</div>
+                  <div className="text-xs text-[#94A3B8] font-medium mt-0.5">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Quick actions */}
+            <div className="bg-white border border-[#DCEFE8] rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-[#0F172A] mb-3">Quick Actions</h3>
+              <div className="space-y-1.5">
                 {[
-                  { icon: '🎯', label: 'Take Career Quiz', to: '/quiz', color: 'hover:bg-indigo-50 hover:border-indigo-300' },
-                  { icon: '🔍', label: 'Explore Careers', to: '/explore', color: 'hover:bg-purple-50 hover:border-purple-300' },
-                  { icon: '💡', label: 'Hidden Careers', to: '/hidden', color: 'hover:bg-amber-50 hover:border-amber-300' },
-                  { icon: '📖', label: 'Student Stories', to: '/stories', color: 'hover:bg-green-50 hover:border-green-300' },
+                  { icon: '🎯', label: 'Take Career Quiz',   to: '/quiz'    },
+                  { icon: '🔍', label: 'Explore Careers',    to: '/explore' },
+                  { icon: '💡', label: 'Hidden Careers',     to: '/hidden'  },
+                  { icon: '📖', label: 'Student Stories',    to: '/stories' },
                 ].map(action => (
                   <Link key={action.to} to={action.to}
-                    className={`flex items-center gap-3 p-3 rounded-xl border border-gray-100 transition ${action.color} group`}>
-                    <span className="text-xl">{action.icon}</span>
-                    <span className="text-gray-700 font-medium text-sm group-hover:text-gray-900">{action.label}</span>
-                    <span className="ml-auto text-gray-300 group-hover:text-gray-500">→</span>
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#F8FFFD] transition-colors group">
+                    <span className="text-base">{action.icon}</span>
+                    <span className="text-sm font-medium text-[#64748B] group-hover:text-[#0F172A] transition-colors flex-1">
+                      {action.label}
+                    </span>
+                    <svg className="w-3.5 h-3.5 text-[#DCEFE8] group-hover:text-[#14B88A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Account Info */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 className="text-lg font-extrabold text-gray-900 mb-4">Account Info</h3>
-              <div className="space-y-3">
+            {/* Account info */}
+            <div className="bg-white border border-[#DCEFE8] rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-[#0F172A] mb-3">Account</h3>
+              <div className="space-y-2.5">
                 {[
-                  { label: 'Name', value: user.name },
+                  { label: 'Name',  value: user.name  },
                   { label: 'Email', value: user.email },
-                  { label: 'Role', value: user.role },
-                  { label: 'Plan', value: 'Free' },
+                  { label: 'Role',  value: user.role  },
+                  { label: 'Plan',  value: 'Free'     },
                 ].map(info => (
-                  <div key={info.label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                    <span className="text-gray-400 text-sm">{info.label}</span>
-                    <span className="text-gray-800 text-sm font-semibold">{info.value}</span>
+                  <div key={info.label} className="flex items-center justify-between py-1.5 border-b border-[#F8FFFD] last:border-0">
+                    <span className="text-xs text-[#94A3B8] font-medium">{info.label}</span>
+                    <span className="text-xs font-semibold text-[#0F172A] truncate max-w-[160px] text-right">{info.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Mission Card */}
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 text-white">
-              <p className="text-indigo-100 text-xs uppercase tracking-widest mb-2 font-semibold">Our Promise</p>
-              <p className="text-white font-bold text-lg leading-snug mb-3">
-                Your future is bigger than your marks.
-              </p>
-              <p className="text-indigo-200 text-sm leading-relaxed">
-                Keep exploring. Keep discovering. The right path is out there.
-              </p>
+            {/* CTA */}
+            <div className="bg-[#0F172A] rounded-2xl p-5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#14B88A]/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-xl pointer-events-none" />
+              <div className="relative z-10">
+                <p className="text-white font-bold text-sm mb-1">Your future is bigger</p>
+                <p className="text-white/50 text-xs mb-4">than your marks.</p>
+                <Link to="/quiz"
+                  className="inline-flex items-center gap-2 bg-[#14B88A] hover:bg-[#0D8F6A] text-white font-semibold px-4 py-2 rounded-xl text-xs transition-all">
+                  Retake the quiz
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   )
